@@ -1,4 +1,6 @@
 const express = require("express");
+const https = require('https');
+const fs = require('fs');
 const cors = require('cors');
 const splitAgentsRoute = require("./src/routes/split-agents");
 const qaRoute = require("./src/routes/qa");
@@ -17,6 +19,8 @@ server.use(cors({
       'https://1167845.apps.zdusercontent.com',
       'https://1167762.apps.zdusercontent.com',
       'https://moeriehelp.zendesk.com',
+      // Allow HTTPS requests to your VPS
+      'https://72.60.18.202:8080',
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
@@ -44,6 +48,31 @@ server.get('/test', (req, res) => {
 server.use('/', splitAgentsRoute);
 server.use('/', qaRoute);
 
-server.listen(8080, () => {
-  console.log('Server runs on port 8080');
-});
+// HTTPS Server Configuration
+try {
+  // Load SSL certificates
+  const httpsOptions = {
+    key: fs.readFileSync('./ssl/private.key'),
+    cert: fs.readFileSync('./ssl/certificate.crt')
+  };
+
+  // Create HTTPS server
+  const httpsServer = https.createServer(httpsOptions, server);
+
+  // Start HTTPS server
+  httpsServer.listen(8080, () => {
+    console.log('🔒 HTTPS Server runs on port 8080');
+    console.log('Server is accessible at: https://72.60.18.202:8080');
+    console.log('⚠️  Note: Self-signed certificate - browsers will show security warning');
+  });
+
+} catch (error) {
+  console.log('⚠️  SSL certificates not found, falling back to HTTP');
+  console.log('Error:', error.message);
+  
+  // Fallback to HTTP server
+  server.listen(8080, () => {
+    console.log('🌐 HTTP Server runs on port 8080');
+    console.log('Server is accessible at: http://72.60.18.202:8080');
+  });
+}
