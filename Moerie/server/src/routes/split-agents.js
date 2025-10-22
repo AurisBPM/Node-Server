@@ -54,7 +54,6 @@ router.get('/split-agent/:agentId', authenticate, async (req, res) => {
 router.post('/split-agent', authenticate, async (req, res) => {
   try {
     console.log('Creating split agent:', req);
-    console.log('Creating split agent:', req.data);
     const { code, email, tag } = req.body;
     
     if (!code || !email || !tag) {
