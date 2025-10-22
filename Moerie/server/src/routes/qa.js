@@ -226,6 +226,18 @@ router.put('/report/:id', authenticate, async (req, res) => {
 
       await connection.execute(query, updateValues);
 
+      // If status is "forwarded", also update all tickets with this report_id
+      if (updateData.status === 'forwarded') {
+        console.log(`Updating all tickets for report ${id} to status: forwarded`);
+        
+        const [ticketUpdateResult] = await connection.execute(
+          `UPDATE tickets SET status = 'forwarded', updated_at = NOW() WHERE report_id = ?`,
+          [id]
+        );
+        
+        console.log(`Updated ${ticketUpdateResult.affectedRows} tickets to forwarded status`);
+      }
+
       await connection.commit();
 
       const [updatedReport] = await connection.execute(
@@ -235,7 +247,11 @@ router.put('/report/:id', authenticate, async (req, res) => {
 
       return res.status(200).json({ 
         message: 'Report updated successfully',
-        report: updatedReport[0]
+        report: updatedReport[0],
+        ...(updateData.status === 'forwarded' && { 
+          ticketsUpdated: true,
+          message: 'Report and all associated tickets updated to forwarded status'
+        })
       });
       
     } catch (error) {
