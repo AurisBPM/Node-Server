@@ -255,8 +255,8 @@ router.post('/tickets', authenticate, async (req, res) => {
     
     const insertPromises = tickets.map(ticket => 
       mysqlPool.execute(
-        `INSERT INTO tickets (id, report_id, subject) VALUES (?, ?, ?)`,
-        [ticket.id, ticket.report_id, ticket.subject || null]
+        `INSERT INTO tickets (id, report_id, subject, tag) VALUES (?, ?, ?, ?)`,
+        [ticket.id, ticket.report_id, ticket.subject || null, ticket.tag || null]
       )
     );
     
