@@ -1,5 +1,3 @@
-// contains all endpoints for functions related to Split Agent functionality ( CS  + QA Apps requests )
-
 const express = require('express');
 const mysql = require('mysql2');
 const DB_CONFIG = require('../config/db-config');
@@ -29,11 +27,9 @@ router.get('/split-agent/:agentId', authenticate, async (req, res) => {
     let query, params;
     
     if (email) {
-      // If email query parameter is provided, search by email
       query = `SELECT * FROM split_agents WHERE email = ?`;
       params = [email];
     } else {
-      // Otherwise, search by agentId (existing behavior)
       query = `SELECT * FROM split_agents WHERE code = ?`;
       params = [agentId];
     }

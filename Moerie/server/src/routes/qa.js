@@ -13,14 +13,12 @@ router.get('/reports', authenticate, async (req, res) => {
   try {
     const { agent_id, tag, status, from, to } = req.query;
     
-  
     if (agent_id && (isNaN(agent_id) || !Number.isInteger(Number(agent_id)))) {
       return res.status(400).json({ 
         error: 'agent_id must be a valid integer.' 
       });
     }
 
-    
     let query = 'SELECT * FROM reports WHERE 1=1';
     const params = [];
     
@@ -49,9 +47,7 @@ router.get('/reports', authenticate, async (req, res) => {
       params.push(to);
     }
     
-    
     const [reports] = await mysqlPool.execute(query, params);
-    
     
     const reportsWithTickets = await Promise.all(
       reports.map(async (report) => {
@@ -67,9 +63,9 @@ router.get('/reports', authenticate, async (req, res) => {
       })
     );
     
-    
     return res.json(reportsWithTickets);
   } catch (error) {
+    console.error('Error fetching reports:', error);
     return res.status(500).json({ 
       error: 'Failed to retrieve reports' 
     });
