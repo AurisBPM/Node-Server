@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name', 32).notNullable();
     table.bigInteger('agent_id').notNullable();
+    table.bigInteger('qa_agent_id').notNullable();
     table.text('comment');
     table.string('status', 45).defaultTo('in_progress');
     table.string('tag', 255);

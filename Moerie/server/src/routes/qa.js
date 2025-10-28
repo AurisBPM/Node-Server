@@ -75,7 +75,7 @@ router.get('/reports', authenticate, async (req, res) => {
 
 router.post('/report', authenticate, async (req, res) => {
   try {
-    const { name, agent_id, tag } = req.body;
+    const { name, agent_id, tag, qa_agent_id } = req.body;
     
     
     if (!name || !agent_id) {
@@ -91,8 +91,8 @@ router.post('/report', authenticate, async (req, res) => {
     }
     
     const [result] = await mysqlPool.execute(
-      `INSERT INTO reports (name, agent_id, tag) VALUES (?, ?, ?)`,
-      [name, agent_id, tag || null]
+      `INSERT INTO reports (name, agent_id, tag, qa_agent_id) VALUES (?, ?, ?, ?)`,
+      [name, agent_id, tag || null, qa_agent_id]
     );
     
     
